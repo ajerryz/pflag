@@ -5,16 +5,21 @@
 /*
 Package pflag is a drop-in replacement for Go's flag package, implementing
 POSIX/GNU-style --flags.
+// pflag 包是 golang 标准flag包的替换，pflag 实现了 POSIX/GNU风格的--flags
 
+
+// pflag 的与POSIX的命令行选项格式兼容
 pflag is compatible with the GNU extensions to the POSIX recommendations
 for command-line options. See
 http://www.gnu.org/software/libc/manual/html_node/Argument-Syntax.html
+
+
 
 Usage:
 
 pflag is a drop-in replacement of Go's native flag package. If you import
 pflag under the name "flag" then all code should continue to function
-with no changes.
+with no changes.(pflag是golang标准flag包的替换项目，如果你像下面这样倒入pflag,则可以直接替换flag)
 
 	import flag "github.com/spf13/pflag"
 
@@ -22,7 +27,8 @@ There is one exception to this: if you directly instantiate the Flag struct
 there is one more field "Shorthand" that you will need to set.
 Most code never instantiates this struct directly, and instead uses
 functions such as String(), BoolVar(), and Var(), and is therefore
-unaffected.
+unaffected.(有一个例外：如果您直接实例化Flag结构，则需要设置的另一个字段“Shorthand”。
+大多数代码绝不会直接实例化该结构，而是使用诸如String（），Booolvar（）和var（）之类的功能，因此不受影响。)
 
 Define flags using flag.String(), Bool(), Int(), etc.
 
@@ -130,10 +136,13 @@ type ErrorHandling int
 
 const (
 	// ContinueOnError will return an err from Parse() if an error is found
+	// 如果在Parse()发生错误，将会将错误返回
 	ContinueOnError ErrorHandling = iota
 	// ExitOnError will call os.Exit(2) if an error is found when parsing
+	// 如果在解析时发生error,将会调用os.Exit(2)
 	ExitOnError
 	// PanicOnError will panic() if an error is found when parsing flags
+	// 如果在解析flags时
 	PanicOnError
 )
 
@@ -149,6 +158,7 @@ type ParseErrorsWhitelist = ParseErrorsAllowlist
 
 // NormalizedName is a flag name that has been normalized according to rules
 // for the FlagSet (e.g. making '-' and '_' equivalent).
+// NormalizedName 归一化名称是根据标志集的规则（例如制作' - ''''和'_'等效的标志名称。
 type NormalizedName string
 
 // A FlagSet represents a set of defined flags.
@@ -157,10 +167,13 @@ type FlagSet struct {
 	// Usage is the function called when an error occurs while parsing flags.
 	// The field is a function (not a method) that may be changed to point to
 	// a custom error handler.
+	//
+	// Usage 是在解析标志时发生错误时调用的函数。该字段是一个可以更改为自定义错误处理程序的函数（不是方法）。
 	Usage func()
 
 	// SortFlags is used to indicate, if user wants to have sorted flags in
 	// help/usage messages.
+	// 如果用户想在“help”消息中分类标志，则使用SortFlags指示。
 	SortFlags bool
 
 	// ParseErrorsAllowlist is used to configure an allowlist of errors
@@ -170,8 +183,8 @@ type FlagSet struct {
 	// This field will be removed in a future release
 	ParseErrorsWhitelist ParseErrorsAllowlist
 
-	name              string
-	parsed            bool
+	name              string // 名称
+	parsed            bool   // 是否解析
 	actual            map[NormalizedName]*Flag
 	orderedActual     []*Flag
 	sortedActual      []*Flag
@@ -190,18 +203,19 @@ type FlagSet struct {
 }
 
 // A Flag represents the state of a flag.
+// Flag 代表一个flag的状态
 type Flag struct {
-	Name                string              // name as it appears on command line
-	Shorthand           string              // one-letter abbreviated flag
-	Usage               string              // help message
+	Name                string              // name as it appears on command line(在命令行上出现的选项)
+	Shorthand           string              // one-letter abbreviated flag(单字母的缩写flag)
+	Usage               string              // help message(帮助信息)
 	Value               Value               // value as set
-	DefValue            string              // default value (as text); for usage message
+	DefValue            string              // default value (as text); for usage message(默认值)
 	Changed             bool                // If the user set the value (or if left to default)
 	NoOptDefVal         string              // default value (as text); if the flag is on the command line without any options
-	Deprecated          string              // If this flag is deprecated, this string is the new or now thing to use
-	Hidden              bool                // used by cobra.Command to allow flags to be hidden from help/usage text
-	ShorthandDeprecated string              // If the shorthand of this flag is deprecated, this string is the new or now thing to use
-	Annotations         map[string][]string // used by cobra.Command bash autocomple code
+	Deprecated          string              // If this flag is deprecated, this string is the new or now thing to use(如果当前flag已启用，这里描述新的替换的东西或者其他自定义的东西)
+	Hidden              bool                // used by cobra.Command to allow flags to be hidden from help/usage text(Cobra.Command用于允许标志在求助文本中隐藏)
+	ShorthandDeprecated string              // If the shorthand of this flag is deprecated, this string is the new or now thing to use(如果该标志的速记被弃用，则该字符串是新的或现在要使用的东西)
+	Annotations         map[string][]string // used by cobra.Command bash autocomple code(Cobra.command bash autoComplete代码使用)
 }
 
 // Value is the interface to the dynamic value stored in a flag.
