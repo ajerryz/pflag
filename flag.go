@@ -152,6 +152,7 @@ type ParseErrorsWhitelist = ParseErrorsAllowlist
 type NormalizedName string
 
 // A FlagSet represents a set of defined flags.
+// 一个 FlagSet 代表一组定义的flag
 type FlagSet struct {
 	// Usage is the function called when an error occurs while parsing flags.
 	// The field is a function (not a method) that may be changed to point to
