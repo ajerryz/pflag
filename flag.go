@@ -152,8 +152,9 @@ type ParseErrorsAllowlist struct {
 	UnknownFlags bool
 }
 
-// DEPRECATED: please use ParseErrorsAllowlist instead
-// This type will be removed in a future release
+// ParseErrorsWhitelist defines the parsing errors that can be ignored.
+//
+// Deprecated: use [ParseErrorsAllowlist] instead. This type will be removed in a future release.
 type ParseErrorsWhitelist = ParseErrorsAllowlist
 
 // NormalizedName is a flag name that has been normalized according to rules
@@ -179,8 +180,9 @@ type FlagSet struct {
 	// ParseErrorsAllowlist is used to configure an allowlist of errors
 	ParseErrorsAllowlist ParseErrorsAllowlist
 
-	// DEPRECATED: please use ParseErrorsAllowlist instead
-	// This field will be removed in a future release
+	// ParseErrorsAllowlist is used to configure an allowlist of errors.
+	//
+	// Deprecated: use [FlagSet.ParseErrorsAllowlist] instead. This field will be removed in a future release.
 	ParseErrorsWhitelist ParseErrorsAllowlist
 
 	name              string // 名称
@@ -736,9 +738,12 @@ func (f *FlagSet) FlagUsagesWrapped(cols int) string {
 		}
 
 		varname, usage := UnquoteUsage(flag)
-		if varname != "" {
+		if flag.Value.Type() == "bool" {
+			line += "[=true|false]"
+		} else if varname != "" {
 			line += " " + varname
 		}
+
 		if flag.NoOptDefVal != "" {
 			switch flag.Value.Type() {
 			case "string":
@@ -1200,7 +1205,7 @@ func (f *FlagSet) Parse(arguments []string) error {
 		case ContinueOnError:
 			return err
 		case ExitOnError:
-			if errors.Is(err, ErrHelp) {
+			if err == ErrHelp {
 				os.Exit(0)
 			}
 			fmt.Fprintln(f.Output(), err)
@@ -1229,7 +1234,7 @@ func (f *FlagSet) ParseAll(arguments []string, fn func(flag *Flag, value string)
 		case ContinueOnError:
 			return err
 		case ExitOnError:
-			if errors.Is(err, ErrHelp) {
+			if err == ErrHelp {
 				os.Exit(0)
 			}
 			fmt.Fprintln(f.Output(), err)
